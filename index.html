@@ -63,6 +63,9 @@
     .form-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
     .btn-primary{background:var(--accent);color:white;padding:10px 20px;border-radius:8px;border:none;cursor:pointer}
     .btn-secondary{background:rgba(255,255,255,0.1);color:var(--text);padding:10px 20px;border-radius:8px;border:none;cursor:pointer}
+    .copy-success{display:none;color:#4ade80;font-size:14px;margin-top:10px;text-align:center}
+    .copy-success.show{display:block}
+    .email-instructions{background:rgba(255,255,255,0.05);padding:12px;border-radius:8px;margin-top:20px;font-size:14px}
     footer{color:var(--muted);text-align:center;padding:28px 6px;font-size:13px;margin-top:30px}
     @media (max-width:900px){.layout{grid-template-columns:1fr}.sidebar{order:2}.thumb{display:none}}
   </style>
@@ -110,7 +113,7 @@
   <div class="submit-form" id="submit-form">
     <div class="submit-modal">
       <h3>Submit Article to Unemployed.com</h3>
-      <p style="font-size:14px;color:var(--muted);margin-bottom:20px">Submit your satirical news article for consideration. When you click "Send Email", your default email client will open with a pre-filled email.</p>
+      <p style="font-size:14px;color:var(--muted);margin-bottom:20px">Submit your satirical news article for consideration.</p>
       
       <div class="form-group">
         <label for="submit-title">Article Title *</label>
@@ -132,9 +135,22 @@
         <input type="text" id="submit-tags" class="form-control" placeholder="featured, politics, tech, etc." />
       </div>
       
+      <div class="email-instructions">
+        <strong>How to submit:</strong>
+        <ol style="margin:8px 0;padding-left:20px">
+          <li>Click "Copy Email Content" below</li>
+          <li>Open your email app</li>
+          <li>Create new email to: <code>notascammer1123@gmail.com</code></li>
+          <li>Paste the copied content</li>
+          <li>Send!</li>
+        </ol>
+      </div>
+      
+      <div class="copy-success" id="copy-success">✅ Email content copied to clipboard!</div>
+      
       <div class="form-actions">
         <button class="btn-secondary" id="cancel-submit">Cancel</button>
-        <button class="btn-primary" id="send-email">Send Email</button>
+        <button class="btn-primary" id="copy-content">Copy Email Content</button>
       </div>
     </div>
   </div>
@@ -246,7 +262,8 @@
     const $submitArticle = document.getElementById('submit-article');
     const $submitForm = document.getElementById('submit-form');
     const $cancelSubmit = document.getElementById('cancel-submit');
-    const $sendEmail = document.getElementById('send-email');
+    const $copyContent = document.getElementById('copy-content');
+    const $copySuccess = document.getElementById('copy-success');
     const $submitTitle = document.getElementById('submit-title');
     const $submitAuthor = document.getElementById('submit-author');
     const $submitContent = document.getElementById('submit-content');
@@ -291,13 +308,14 @@
       $submitAuthor.value = '';
       $submitContent.value = '';
       $submitTags.value = '';
+      $copySuccess.classList.remove('show');
     }
 
     function closeSubmitForm() {
       $submitForm.classList.remove('active');
     }
 
-    function sendEmail() {
+    function copyToClipboard() {
       const title = $submitTitle.value.trim();
       const author = $submitAuthor.value.trim();
       const content = $submitContent.value.trim();
@@ -309,37 +327,39 @@
         return;
       }
       
-      // Create email subject and body
-      const subject = `Article Submission: ${title}`;
-      const body = `Article Submission for Unemployed.com
+      // Create email content
+      const emailContent = `SUBJECT: Article Submission for Unemployed.com: ${title}
 
+TO: notascammer1123@gmail.com
+
+ARTICLE DETAILS:
 Title: ${title}
 Author: ${author}
-Tags: ${tags || 'None specified'}
 Date: ${new Date().toLocaleDateString()}
+Tags: ${tags || 'None specified'}
 
-Article Content:
+ARTICLE CONTENT:
 ${content}
 
 ---
 Submitted via Unemployed.com submission form`;
       
-      // Encode for mailto link
-      const encodedSubject = encodeURIComponent(subject);
-      const encodedBody = encodeURIComponent(body);
-      const email = 'notascammer1123@gmail.com';
-      
-      // Create mailto link and open it
-      const mailtoLink = `mailto:${email}?subject=${encodedSubject}&body=${encodedBody}`;
-      
-      // Try to open email client
-      window.location.href = mailtoLink;
-      
-      // Show confirmation and close form
-      setTimeout(() => {
-        alert('Your email client should open with a pre-filled email. Please review and send it to submit your article.');
-        closeSubmitForm();
-      }, 100);
+      // Copy to clipboard
+      navigator.clipboard.writeText(emailContent).then(() => {
+        // Show success message
+        $copySuccess.classList.add('show');
+        
+        // Scroll to show the success message
+        $copySuccess.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        
+        // Hide success message after 5 seconds
+        setTimeout(() => {
+          $copySuccess.classList.remove('show');
+        }, 5000);
+      }).catch(err => {
+        console.error('Failed to copy: ', err);
+        alert('Failed to copy to clipboard. Please select and copy the text manually.');
+      });
     }
 
     // --- rendering ---
@@ -432,13 +452,20 @@ Submitted via Unemployed.com submission form`;
       $cancelSubmit.addEventListener('click', closeSubmitForm);
     }
     
-    if($sendEmail) {
-      $sendEmail.addEventListener('click', sendEmail);
+    if($copyContent) {
+      $copyContent.addEventListener('click', copyToClipboard);
     }
 
     // Close form when clicking on backdrop
     $submitForm.addEventListener('click', function(e) {
       if (e.target === $submitForm) {
+        closeSubmitForm();
+      }
+    });
+
+    // Close form with Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && $submitForm.classList.contains('active')) {
         closeSubmitForm();
       }
     });
