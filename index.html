@@ -1,12 +1,4 @@
-<!--
-  Unemployed.com - Single-file static Onion-style site
-  --------------------------------------------------
-  Edit the ARTICLES array below to add, remove, or change articles.
-  Each article object supports: {id, title, author, date, tags, excerpt, content, image}
-  - `image` should be a URL string for the article banner/thumbnail.
-  Save and open this file in a browser.
--->
-
+<!-- Unemployed.com - Single-file static Onion-style site -------------------------------------------------- Edit the ARTICLES array below to add, remove, or change articles. Each article object supports: {id, title, author, date, tags, excerpt, content, image} - image should be a URL string for the article banner/thumbnail. Save and open this file in a browser. -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -17,10 +9,8 @@
     /* Theme tokens */
     :root{--bg:#0b1020;--card:#071020;--muted:#9aa4b2;--accent:#d9480f;--text:#e6eef6}
     [data-theme="light"]{--bg:#f7f7f8;--card:#ffffff;--muted:#6b7280;--accent:#c2410c;--text:#0b1220}
-
     *{box-sizing:border-box}
     body{margin:0;font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,Arial;background:linear-gradient(180deg,var(--bg) 0%, #071028 100%);color:var(--text);min-height:100vh}
-
     /* Header */
     header{display:flex;align-items:center;justify-content:space-between;padding:18px 26px;border-bottom:1px solid rgba(255,255,255,0.03);background:transparent}
     .brand{display:flex;gap:14px;align-items:baseline}
@@ -29,16 +19,13 @@
     .controls{display:flex;align-items:center;gap:10px}
     .btn{background:transparent;border:0;color:var(--text);cursor:pointer;padding:8px;border-radius:8px}
     .gear{font-size:18px}
-
     /* Layout */
     .container{max-width:1100px;margin:24px auto;padding:0 18px}
     .layout{display:grid;grid-template-columns:1fr 300px;gap:22px}
-
     /* Main column */
     .main-col{display:flex;flex-direction:column;gap:18px}
     .headline{font-family:Georgia, 'Times New Roman', serif;font-size:36px;margin:0}
     .hero{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
-
     /* Cards */
     .cards{display:flex;flex-direction:column;gap:14px}
     .card{display:flex;gap:14px;background:var(--card);border-radius:10px;padding:14px;border:1px solid rgba(255,255,255,0.03);align-items:flex-start}
@@ -49,27 +36,34 @@
     .meta{font-size:12px;color:var(--muted);margin-top:6px}
     .excerpt{margin-top:8px;color:var(--text);opacity:0.9}
     .read-more{margin-top:10px;color:var(--accent);cursor:pointer;display:inline-block}
-
     /* Sidebar */
     .sidebar{position:relative}
     .search{margin-bottom:12px}
     #q{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.08);background:transparent;color:var(--text)}
     .tag{display:inline-block;background:rgba(255,255,255,0.03);padding:6px 10px;border-radius:999px;font-size:12px;margin:6px 6px 0 0;color:var(--text)}
-
     /* Article view */
     .article-view{max-width:900px;margin:0 auto;padding:22px;background:var(--card);border-radius:12px}
     .article-view h1{font-family:Georgia,serif}
     .banner{width:100%;height:340px;object-fit:cover;border-radius:10px;margin-bottom:12px}
-
     /* Settings modal */
     .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:flex-start;justify-content:center;padding-top:60px}
     .modal{background:var(--card);padding:18px;border-radius:10px;max-width:420px;width:calc(100% - 40px);border:1px solid rgba(255,255,255,0.04)}
     .row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px dashed rgba(255,255,255,0.02)}
     label{font-size:14px}
     .switch{display:inline-flex;gap:8px;align-items:center}
-
+    /* Submit form */
+    .submit-form{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);align-items:center;justify-content:center;z-index:1000}
+    .submit-form.active{display:flex}
+    .submit-modal{background:var(--card);padding:24px;border-radius:12px;max-width:500px;width:90%;max-height:80vh;overflow-y:auto}
+    .submit-modal h3{margin-top:0;margin-bottom:16px}
+    .form-group{margin-bottom:16px}
+    .form-group label{display:block;margin-bottom:6px;font-size:14px;color:var(--muted)}
+    .form-control{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(0,0,0,0.2);color:var(--text);font-family:inherit;font-size:14px}
+    textarea.form-control{min-height:120px;resize:vertical}
+    .form-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+    .btn-primary{background:var(--accent);color:white;padding:10px 20px;border-radius:8px;border:none;cursor:pointer}
+    .btn-secondary{background:rgba(255,255,255,0.1);color:var(--text);padding:10px 20px;border-radius:8px;border:none;cursor:pointer}
     footer{color:var(--muted);text-align:center;padding:28px 6px;font-size:13px;margin-top:30px}
-
     @media (max-width:900px){.layout{grid-template-columns:1fr}.sidebar{order:2}.thumb{display:none}}
   </style>
 </head>
@@ -79,13 +73,12 @@
       <div class="logo">Unemployed.com</div>
       <div class="tagline">The only place for real* news.</div>
     </div>
-
     <div class="controls">
+      <button class="btn" id="submit-article" title="Submit Article">✏️ Submit</button>
       <button class="btn" id="status-brief" title="Employment status">Status: <span id="status-text">—</span></button>
       <button class="btn gear" id="open-settings" title="Settings">⚙️</button>
     </div>
   </header>
-
   <main class="container" id="app">
     <div class="layout">
       <div class="main-col">
@@ -93,16 +86,13 @@
           <h2 class="headline" id="hero-title">Latest Headlines</h2>
           <div id="hero-sub" class="meta">The Realest* News of All Time</div>
         </div>
-
         <div class="cards" id="cards"></div>
       </div>
-
       <aside class="sidebar">
         <div class="search">
           <input id="q" placeholder="Search headlines or tags..." />
         </div>
         <div id="tags"></div>
-
         <div style="height:12px"></div>
         <div style="padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);border:1px solid rgba(255,255,255,0.02)">
           <div style="font-size:13px;color:var(--muted)">Profiles</div>
@@ -110,15 +100,47 @@
         </div>
       </aside>
     </div>
-
     <!-- Article view (hidden by default) -->
     <div id="article-view" style="display:none;margin-top:18px">
       <div class="article-view" id="article-content"></div>
     </div>
   </main>
-
+  
+  <!-- Submit Article Form -->
+  <div class="submit-form" id="submit-form">
+    <div class="submit-modal">
+      <h3>Submit Article to Unemployed.com</h3>
+      <p style="font-size:14px;color:var(--muted);margin-bottom:20px">Submit your satirical news article for consideration. When you click "Send Email", your default email client will open with a pre-filled email.</p>
+      
+      <div class="form-group">
+        <label for="submit-title">Article Title *</label>
+        <input type="text" id="submit-title" class="form-control" placeholder="Enter your catchy headline" />
+      </div>
+      
+      <div class="form-group">
+        <label for="submit-author">Your Name/Alias *</label>
+        <input type="text" id="submit-author" class="form-control" placeholder="Enter your name or pen name" />
+      </div>
+      
+      <div class="form-group">
+        <label for="submit-content">Article Content *</label>
+        <textarea id="submit-content" class="form-control" placeholder="Write your hilarious satirical article here..."></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label for="submit-tags">Tags (comma separated)</label>
+        <input type="text" id="submit-tags" class="form-control" placeholder="featured, politics, tech, etc." />
+      </div>
+      
+      <div class="form-actions">
+        <button class="btn-secondary" id="cancel-submit">Cancel</button>
+        <button class="btn-primary" id="send-email">Send Email</button>
+      </div>
+    </div>
+  </div>
+  
   <footer>© Unemployed.com — The only place for real* news.</footer>
-
+  
   <!-- Settings modal template -->
   <template id="settings-template">
     <div class="modal-backdrop" id="modal-backdrop">
@@ -150,7 +172,7 @@
       </div>
     </div>
   </template>
-
+  
   <script>
     /***** ARTICLES: edit this array to add or change articles *****/
     const ARTICLES = [
@@ -162,47 +184,30 @@
         tags: ['67','gasp','featured','mango'],
         excerpt: 'Local hero finally finds the correlation between 6 7 and Mangos, spreads news all over the internet.',
         image: 'https://preview.redd.it/6-7-mango-meme-v0-by830zk86njf1.jpeg?auto=webp&s=ac730a08250ce058226e2c5d59fa7b051206b571',
-        content: `<p>A self-taught data analyst from the local community has published what experts are calling “the most unintentionally destabilizing mathematical discovery of the decade,” revealing a direct correlation between the numbers 6 and 7 and the mango tree distribution in Guinea-Bissau.<br><br>
-
-The theory, released in a 4,000-word online paper, begins with a simple observation:
-6 is the sixth letter of the alphabet, representing “F,” commonly used to denote France.
-7 maps to “G,” standing for Germany.<br><br>
-
-From that point, the researcher cross-referenced population data for both nations.
-France currently has a population of 66,694,631; Germany has 83,871,626.
-Subtracting France’s population from Germany’s yields a number approximating the population of Guinea-Bissau.<br><br>
-
-The final step, according to the paper, is the summation: 6 + 7 = 13.<br>
-This calculation, the author asserts, “cannot be dismissed as trivial,” because the 13th most prevalent plant species in Guinea-Bissau is the mango tree.<br><br>
-
-The publication has sent ripples through multiple fields, including mathematics, agricultural science, and international relations.<br><br>
-
-European demographers initially rejected the findings as “irrelevant,” but within hours the study was cited by multiple independent researchers attempting to replicate the results.<br><br>
-
-“The conclusion is uncomfortable,” said Dr. Hilde Brandt, a population statistician at the University of Bonn. “It implies that mango distribution patterns in West Africa are functionally entangled with the alphabetical representation of Western European nation-states.”</p>`
+        content: `<p>A self-taught data analyst from the local community has published what experts are calling "the most unintentionally destabilizing mathematical discovery of the decade," revealing a direct correlation between the numbers 6 and 7 and the mango tree distribution in Guinea-Bissau.<br><br>
+        The theory, released in a 4,000-word online paper, begins with a simple observation: 6 is the sixth letter of the alphabet, representing "F," commonly used to denote France. 7 maps to "G," standing for Germany.<br><br>
+        From that point, the researcher cross-referenced population data for both nations. France currently has a population of 66,694,631; Germany has 83,871,626. Subtracting France's population from Germany's yields a number approximating the population of Guinea-Bissau.<br><br>
+        The final step, according to the paper, is the summation: 6 + 7 = 13.<br>
+        This calculation, the author asserts, "cannot be dismissed as trivial," because the 13th most prevalent plant species in Guinea-Bissau is the mango tree.<br><br>
+        The publication has sent ripples through multiple fields, including mathematics, agricultural science, and international relations.<br><br>
+        European demographers initially rejected the findings as "irrelevant," but within hours the study was cited by multiple independent researchers attempting to replicate the results.<br><br>
+        "The conclusion is uncomfortable," said Dr. Hilde Brandt, a population statistician at the University of Bonn. "It implies that mango distribution patterns in West Africa are functionally entangled with the alphabetical representation of Western European nation-states."</p>`
       },
       {
         id: '2025-11-30-coffee-shortage',
-        title: 'Official Statement From Skibidi shocks the world: "I Am Not From Ohio”',
+        title: 'Official Statement From Skibidi shocks the world: "I Am Not From Ohio"',
         author: 'The Rizzler of OZ',
         date: 'November 30, 2025',
         tags: ['featured','skibidi'],
         excerpt: 'After Conspiracies and clues, Skibidi finally reveals that he is NOT from Ohio, putting the world in a great depression.',
         image: 'https://media.cnn.com/api/v1/images/stellar/prod/screen-shot-2024-07-25-at-10-27-16-am.jpg?c=16x9&q=h_833,w_1480,c_fill',
-        content: `<p>In a development that has surprised cultural analysts and destabilized several online communities, Skibidi — the digital figure whose origins, identity, and intentions have been the subject of ongoing speculation — issued a rare public statement Wednesday clarifying that he is “not from Ohio.”<br><br>
-
-The statement, delivered in a brief press release forwarded to multiple news outlets, read in its entirety:
-“I am NOT from Ohio.”<br><br>
-
-Although short, experts say the text carries significant implications.<br><br>
-
-“This is the clearest denial to date,” noted Dr. Leonard Krayn, a professor of Digital Semiotics at Northwestern University. “For years, rumors circulated that Skibidi’s origins were tied to the Midwest. Today’s clarification formally disrupts that narrative.”<br><br>
-
-The U.S. Census Bureau declined to comment on whether Skibidi had ever been counted in Ohio population surveys. Ohio Governor Michael DeWine’s office released a cautious note late Wednesday simply stating that the administration had received Skibidi’s remarks and was “reviewing jurisdictional relevance.”<br><br>
-
-Internationally, the implications are widening.<br><br>
-
-“By explicitly denying Ohio affiliation, Skibidi leaves open the question of whether he may, in fact, be from a non-contiguous U.S. territory,” said geopolitical analyst Mariah Henderson. “Puerto Rico, Guam, and parts of Canada have already been floated as possibilities.”</p>`
+        content: `<p>In a development that has surprised cultural analysts and destabilized several online communities, Skibidi — the digital figure whose origins, identity, and intentions have been the subject of ongoing speculation — issued a rare public statement Wednesday clarifying that he is "not from Ohio."<br><br>
+        The statement, delivered in a brief press release forwarded to multiple news outlets, read in its entirety: "I am NOT from Ohio."<br><br>
+        Although short, experts say the text carries significant implications.<br><br>
+        "This is the clearest denial to date," noted Dr. Leonard Krayn, a professor of Digital Semiotics at Northwestern University. "For years, rumors circulated that Skibidi's origins were tied to the Midwest. Today's clarification formally disrupts that narrative."<br><br>
+        The U.S. Census Bureau declined to comment on whether Skibidi had ever been counted in Ohio population surveys. Ohio Governor Michael DeWine's office released a cautious note late Wednesday simply stating that the administration had received Skibidi's remarks and was "reviewing jurisdictional relevance."<br><br>
+        Internationally, the implications are widening.<br><br>
+        "By explicitly denying Ohio affiliation, Skibidi leaves open the question of whether he may, in fact, be from a non-contiguous U.S. territory," said geopolitical analyst Mariah Henderson. "Puerto Rico, Guam, and parts of Canada have already been floated as possibilities."</p>`
       },
       {
         id: '2025-11-25-coffee-shortage',
@@ -212,29 +217,18 @@ Internationally, the implications are widening.<br><br>
         tags: ['big','gasp','cheater','omg'],
         excerpt: 'NASA reveals Mr. Big Bang cheated on Mrs. Big Crunch on Dark Matter #42',
         image: 'https://images.newscientist.com/wp-content/uploads/2014/12/11160643/big-bang-fhymk7.jpg?crop=4:3,smart&width=1200&height=900&upscale=true',
-        content: `<p>In what officials are calling “an unexpected and deeply troubling development,” NASA researchers announced Thursday that forensic analysis of Dark Matter Sample #42 has revealed evidence of a long-running extrarelational relationship between cosmological entities Mr. Big Bang and Mrs. Big Crunch.<br><br>
-
-The discovery occurred during a routine structural examination of the sample — officially classified as Fragment 42-B — when physicists detected anomalous quantum signatures inconsistent with currently accepted cosmological monogamy frameworks.<br><br>
-
-“As we sequenced the energy patterns, it became clear that this was not a purely gravitational artifact,” said Dr. Imani Foster, a senior astrophysicist at NASA’s Cosmic Relations Division. “The evidence points to prolonged interaction between Big Bang and an unidentified dark matter body, which deep-space metadata suggests was not Mrs. Big Crunch.”<br><br>
-
-Mrs. Big Crunch, widely theorized to represent the potential final collapse phase of the universe, has not issued a public statement. Senior researchers say her silence is “measured but powerful.”<br><br>
-
-The incident sheds new light on the interpersonal dynamics of cosmic-scale phenomena previously assumed to be unshakeably stable.<br><br>
-
-“For nearly a century, our models assumed that Big Bang and Big Crunch maintained a closed cosmic loop — a kind of universal marriage,” said Dr. Kenneth Reyes, professor of spacetime ethics at Caltech. “Finding that Dark Matter piece #42 contains emotional residue from a third party challenges every assumption we’ve made about anything.”<br><br>
-
-NASA insists the disclosure is not intended to sensationalize, but to maintain transparency within the astrophysics community.<br><br>
-
-“Trust in the scientific process is essential,” said NASA spokesperson Ellen Moore. “We cannot meaningfully model universal destiny while obscuring relational instability at the foundational scale.”<br><br>
-
-Meanwhile, unidentified sources within the agency suggest that the Dark Matter involved may not have been purely passive.<br><br>
-
-The document also indicates that the affair may have impacted cosmic expansion rates from the earliest milliseconds following the initial inflationary era. Analysts warn that additional revelations could further complicate models of universal trajectory.<br><br>
-
-As of press time, researchers are preparing a follow-up press briefing to address growing speculation regarding the cosmic consequences of the disclosed relationship. Independent laboratories have begun examining Sample #43 for corroboration.<br><br>
-
-No date has been set for divorce proceedings.</p>`
+        content: `<p>In what officials are calling "an unexpected and deeply troubling development," NASA researchers announced Thursday that forensic analysis of Dark Matter Sample #42 has revealed evidence of a long-running extrarelational relationship between cosmological entities Mr. Big Bang and Mrs. Big Crunch.<br><br>
+        The discovery occurred during a routine structural examination of the sample — officially classified as Fragment 42-B — when physicists detected anomalous quantum signatures inconsistent with currently accepted cosmological monogamy frameworks.<br><br>
+        "As we sequenced the energy patterns, it became clear that this was not a purely gravitational artifact," said Dr. Imani Foster, a senior astrophysicist at NASA's Cosmic Relations Division. "The evidence points to prolonged interaction between Big Bang and an unidentified dark matter body, which deep-space metadata suggests was not Mrs. Big Crunch."<br><br>
+        Mrs. Big Crunch, widely theorized to represent the potential final collapse phase of the universe, has not issued a public statement. Senior researchers say her silence is "measured but powerful."<br><br>
+        The incident sheds new light on the interpersonal dynamics of cosmic-scale phenomena previously assumed to be unshakeably stable.<br><br>
+        "For nearly a century, our models assumed that Big Bang and Big Crunch maintained a closed cosmic loop — a kind of universal marriage," said Dr. Kenneth Reyes, professor of spacetime ethics at Caltech. "Finding that Dark Matter piece #42 contains emotional residue from a third party challenges every assumption we've made about anything."<br><br>
+        NASA insists the disclosure is not intended to sensationalize, but to maintain transparency within the astrophysics community.<br><br>
+        "Trust in the scientific process is essential," said NASA spokesperson Ellen Moore. "We cannot meaningfully model universal destiny while obscuring relational instability at the foundational scale."<br><br>
+        Meanwhile, unidentified sources within the agency suggest that the Dark Matter involved may not have been purely passive.<br><br>
+        The document also indicates that the affair may have impacted cosmic expansion rates from the earliest milliseconds following the initial inflationary era. Analysts warn that additional revelations could further complicate models of universal trajectory.<br><br>
+        As of press time, researchers are preparing a follow-up press briefing to address growing speculation regarding the cosmic consequences of the disclosed relationship. Independent laboratories have begun examining Sample #43 for corroboration.<br><br>
+        No date has been set for divorce proceedings.</p>`
       },
     ];
     /***** end ARTICLES *****/
@@ -249,38 +243,126 @@ No date has been set for divorce proceedings.</p>`
     const $openSettings = document.getElementById('open-settings');
     const $statusBrief = document.getElementById('status-brief');
     const $statusText = document.getElementById('status-text');
+    const $submitArticle = document.getElementById('submit-article');
+    const $submitForm = document.getElementById('submit-form');
+    const $cancelSubmit = document.getElementById('cancel-submit');
+    const $sendEmail = document.getElementById('send-email');
+    const $submitTitle = document.getElementById('submit-title');
+    const $submitAuthor = document.getElementById('submit-author');
+    const $submitContent = document.getElementById('submit-content');
+    const $submitTags = document.getElementById('submit-tags');
 
     // --- settings / prefs ---
     const PREFS_KEY = 'unemployed_prefs_v1';
-    const defaultPrefs = { theme: 'dark', employment: 'unknown' };
-    function loadPrefs(){ try{ const raw = localStorage.getItem(PREFS_KEY); return raw ? JSON.parse(raw) : defaultPrefs }catch(e){return defaultPrefs} }
-    function savePrefs(p){ localStorage.setItem(PREFS_KEY, JSON.stringify(p)); applyPrefs(p); }
+    const defaultPrefs = {
+      theme: 'dark',
+      employment: 'unknown'
+    };
+    function loadPrefs(){
+      try{
+        const raw = localStorage.getItem(PREFS_KEY);
+        return raw ? JSON.parse(raw) : defaultPrefs
+      }catch(e){return defaultPrefs}
+    }
+    function savePrefs(p){
+      localStorage.setItem(PREFS_KEY, JSON.stringify(p));
+      applyPrefs(p);
+    }
     function applyPrefs(p){
       if(!p) p = loadPrefs();
       // theme handling
       if(p.theme === 'system'){
         const mq = window.matchMedia('(prefers-color-scheme: light)');
         document.body.setAttribute('data-theme', mq.matches ? 'light' : 'dark');
-      } else {
+      }
+      else {
         document.body.setAttribute('data-theme', p.theme);
       }
       // employment brief
-      $statusText.textContent = (p.employment === 'employed') ? 'Employed' : (p.employment === 'unemployed') ? 'Unemployed' : '—';
+      $statusText.textContent = (p.employment === 'employed') ? 'Employed' :
+                               (p.employment === 'unemployed') ? 'Unemployed' : '—';
+    }
+
+    // --- article submission functions ---
+    function openSubmitForm() {
+      $submitForm.classList.add('active');
+      // Clear form fields
+      $submitTitle.value = '';
+      $submitAuthor.value = '';
+      $submitContent.value = '';
+      $submitTags.value = '';
+    }
+
+    function closeSubmitForm() {
+      $submitForm.classList.remove('active');
+    }
+
+    function sendEmail() {
+      const title = $submitTitle.value.trim();
+      const author = $submitAuthor.value.trim();
+      const content = $submitContent.value.trim();
+      const tags = $submitTags.value.trim();
+      
+      // Basic validation
+      if (!title || !author || !content) {
+        alert('Please fill in all required fields (Title, Author, and Content).');
+        return;
+      }
+      
+      // Create email subject and body
+      const subject = `Article Submission: ${title}`;
+      const body = `Article Submission for Unemployed.com
+
+Title: ${title}
+Author: ${author}
+Tags: ${tags || 'None specified'}
+Date: ${new Date().toLocaleDateString()}
+
+Article Content:
+${content}
+
+---
+Submitted via Unemployed.com submission form`;
+      
+      // Encode for mailto link
+      const encodedSubject = encodeURIComponent(subject);
+      const encodedBody = encodeURIComponent(body);
+      const email = 'notascammer1123@gmail.com';
+      
+      // Create mailto link and open it
+      const mailtoLink = `mailto:${email}?subject=${encodedSubject}&body=${encodedBody}`;
+      
+      // Try to open email client
+      window.location.href = mailtoLink;
+      
+      // Show confirmation and close form
+      setTimeout(() => {
+        alert('Your email client should open with a pre-filled email. Please review and send it to submit your article.');
+        closeSubmitForm();
+      }, 100);
     }
 
     // --- rendering ---
     function renderCards(list){
       $cards.innerHTML = '';
-      if(list.length === 0){ $cards.innerHTML = '<div style="color:var(--muted)">No articles match that search.</div>'; return }
+      if(list.length === 0){
+        $cards.innerHTML = '<div style="color:var(--muted)">No articles match that search.</div>';
+        return
+      }
       list.forEach(a=>{
-        const el = document.createElement('article'); el.className = 'card'+(a.tags && a.tags.includes('featured')? ' featured':'');
-
-        const thumb = document.createElement('div'); thumb.className = 'thumb';
-        if(a.image){ const img = document.createElement('img'); img.src = a.image; img.alt = a.title; thumb.appendChild(img); }
-
-        const body = document.createElement('div'); body.className = 'card-body';
+        const el = document.createElement('article');
+        el.className = 'card'+(a.tags && a.tags.includes('featured')? ' featured':'');
+        const thumb = document.createElement('div');
+        thumb.className = 'thumb';
+        if(a.image){
+          const img = document.createElement('img');
+          img.src = a.image;
+          img.alt = a.title;
+          thumb.appendChild(img);
+        }
+        const body = document.createElement('div');
+        body.className = 'card-body';
         body.innerHTML = `<h3>${escapeHtml(a.title)}</h3><div class="meta">${escapeHtml(a.author)} — ${escapeHtml(a.date)}</div><div class="excerpt">${escapeHtml(a.excerpt)}</div><div style="margin-top:8px"><span class="read-more" data-id="${a.id}">Read</span></div>`;
-
         el.appendChild(thumb);
         el.appendChild(body);
         $cards.appendChild(el);
@@ -290,27 +372,38 @@ No date has been set for divorce proceedings.</p>`
     }
 
     function renderTags(){
-      const tagSet = new Set(); ARTICLES.forEach(a=> (a.tags||[]).forEach(t=>tagSet.add(t)) );
+      const tagSet = new Set();
+      ARTICLES.forEach(a=> (a.tags||[]).forEach(t=>tagSet.add(t)) );
       $tags.innerHTML = '';
       Array.from(tagSet).forEach(t=>{
-        const b = document.createElement('button'); b.className = 'tag'; b.textContent = t; b.addEventListener('click',()=>{ $q.value = t; applyFilter(); });
+        const b = document.createElement('button');
+        b.className = 'tag';
+        b.textContent = t;
+        b.addEventListener('click',()=>{
+          $q.value = t;
+          applyFilter();
+        });
         $tags.appendChild(b);
       })
     }
 
     function openArticle(id){
-      const a = ARTICLES.find(x=>x.id===id); if(!a) return;
+      const a = ARTICLES.find(x=>x.id===id);
+      if(!a) return;
       location.hash = '#article='+id;
       document.getElementById('article-view').style.display = 'block';
       // hide main listing
       document.querySelector('.layout').style.display = 'none';
-
       const banner = a.image ? `<img src="${a.image}" class="banner" alt="${escapeHtml(a.title)}">` : '';
       $articleContent.innerHTML = `<div class="back" style="cursor:pointer;color:var(--muted);margin-bottom:12px;" onclick="goHome()">← Back to headlines</div>${banner}<h1>${escapeHtml(a.title)}</h1><div class="meta">${escapeHtml(a.author)} — ${escapeHtml(a.date)}</div><div style="height:12px"></div>${a.content}`;
       window.scrollTo(0,0);
     }
 
-    function goHome(){ location.hash = ''; document.getElementById('article-view').style.display = 'none'; document.querySelector('.layout').style.display = 'grid'; }
+    function goHome(){
+      location.hash = '';
+      document.getElementById('article-view').style.display = 'none';
+      document.querySelector('.layout').style.display = 'grid';
+    }
 
     function applyFilter(){
       const q = ($q && $q.value) ? $q.value.trim().toLowerCase() : '';
@@ -321,23 +414,54 @@ No date has been set for divorce proceedings.</p>`
       renderCards(out);
     }
 
-    function escapeHtml(s){ return (s+'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c]}); }
+    function escapeHtml(s){
+      return (s+'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c]});
+    }
 
     // --- safe event wiring: ensure elements exist ---
-    if($q){ $q.addEventListener('input',applyFilter); }
+    if($q){
+      $q.addEventListener('input',applyFilter);
+    }
+
+    // Article submission event listeners
+    if($submitArticle) {
+      $submitArticle.addEventListener('click', openSubmitForm);
+    }
+    
+    if($cancelSubmit) {
+      $cancelSubmit.addEventListener('click', closeSubmitForm);
+    }
+    
+    if($sendEmail) {
+      $sendEmail.addEventListener('click', sendEmail);
+    }
+
+    // Close form when clicking on backdrop
+    $submitForm.addEventListener('click', function(e) {
+      if (e.target === $submitForm) {
+        closeSubmitForm();
+      }
+    });
 
     // initial render
-    renderTags(); renderCards(ARTICLES);
+    renderTags();
+    renderCards(ARTICLES);
 
     // hash routing
     window.addEventListener('hashchange',()=>{
       const h = location.hash.replace('#','');
-      if(!h) { goHome(); return }
-      if(h.startsWith('article=')){ const id = h.split('=')[1]; openArticle(id); }
+      if(!h) {
+        goHome();
+        return
+      }
+      if(h.startsWith('article=')){
+        const id = h.split('=')[1];
+        openArticle(id);
+      }
     });
-
     if(location.hash.startsWith('#article=')){
-      const id = location.hash.replace('#article=',''); setTimeout(()=>openArticle(id),50);
+      const id = location.hash.replace('#article=','');
+      setTimeout(()=>openArticle(id),50);
     }
 
     // --- settings modal handling ---
@@ -349,17 +473,24 @@ No date has been set for divorce proceedings.</p>`
       const themeSelect = document.getElementById('theme-select');
       const empSelect = document.getElementById('employment-select');
       const close = document.getElementById('close-modal');
-
       // set current values
       const prefs = loadPrefs();
       if(themeSelect) themeSelect.value = prefs.theme || 'dark';
       if(empSelect) empSelect.value = prefs.employment || 'unknown';
-
-      themeSelect.addEventListener('change',()=>{ prefs.theme = themeSelect.value; savePrefs(prefs); });
-      empSelect.addEventListener('change',()=>{ prefs.employment = empSelect.value; savePrefs(prefs); });
-
-      close.addEventListener('click',()=>{ backdrop.remove(); });
-      backdrop.addEventListener('click',(e)=>{ if(e.target === backdrop) backdrop.remove(); });
+      themeSelect.addEventListener('change',()=>{
+        prefs.theme = themeSelect.value;
+        savePrefs(prefs);
+      });
+      empSelect.addEventListener('change',()=>{
+        prefs.employment = empSelect.value;
+        savePrefs(prefs);
+      });
+      close.addEventListener('click',()=>{
+        backdrop.remove();
+      });
+      backdrop.addEventListener('click',(e)=>{
+        if(e.target === backdrop) backdrop.remove();
+      });
     }
 
     if($openSettings) $openSettings.addEventListener('click',openSettingsModal);
@@ -369,7 +500,6 @@ No date has been set for divorce proceedings.</p>`
 
     // expose goHome globally for inline onclick
     window.goHome = goHome;
-
   </script>
 </body>
 </html>
